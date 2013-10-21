@@ -3,10 +3,23 @@ var umlboard = (function() {
 	
 	var platform;
 	var umlPanel;
+	
+	var elementDefaultWidth = 200;
+	var elementDefaultHeight = 100;
+	
+	//define the different diagram id names
+	var diagramClassId = "diagram-class";
+	var diagramInterfaceId = "diagram-interface";
+	var diagramAbstractId = "diagram-abstract";
+	
+	//define the different link type names
+	var linkGeneralizationId = "link-generalization";
+	var linkImplementationId = "link-implementation";
+	var linkAggregationId = "link-aggregation";
+	var linkCompositionId = "link-composition";
 
 	function connectToPlatform(url) {
-		platform = new Platform(url);
-		platform.start();
+		umlPanel.startPlatform(url);
 	}
 	
 	function initUMLClassGraph() {
@@ -14,10 +27,9 @@ var umlboard = (function() {
 			$( ".selectable" ).selectable();
 		});
 		
-		$('#class-panel-selectable').append('<li id="diagram-class" class="ui-widget-content">Class</li>');
-		$('#class-panel-selectable').append('<li id="diagram-interface" class="ui-widget-content">Interface</li>');
-		$('#class-panel-selectable').append('<li id="diagram-abstract" class="ui-widget-content">Abstract Class</li>');
-		$('#class-panel-selectable').append('<li id="diagram-enum" class="ui-widget-content">Enum</li>');
+		$('#class-panel-selectable').append('<li id="' + diagramClassId + '" class="ui-widget-content">Class</li>');
+		$('#class-panel-selectable').append('<li id="' + diagramInterfaceId + '" class="ui-widget-content">Interface</li>');
+		$('#class-panel-selectable').append('<li id="' + diagramAbstractId + '" class="ui-widget-content">Abstract Class</li>');
 		
 		$('#diagram-class').draggable({
 			opacity: 0.7, helper: "clone",
@@ -41,10 +53,10 @@ var umlboard = (function() {
 			$( ".selectable" ).selectable();
 		});
 		
-		$('#arrow-panel-selectable').append('<li class="ui-widget-content">Link1</li>');
-		$('#arrow-panel-selectable').append('<li class="ui-widget-content">Line2</li>');
-		$('#arrow-panel-selectable').append('<li class="ui-widget-content">Link3</li>');
-		$('#arrow-panel-selectable').append('<li class="ui-widget-content">Link4</li>');
+		$('#arrow-panel-selectable').append('<li id=' + linkGeneralizationId + 'class="ui-widget-content">Generalization</li>');
+		$('#arrow-panel-selectable').append('<li id=' + linkImplementationId + 'class="ui-widget-content">Implementation</li>');
+		$('#arrow-panel-selectable').append('<li id=' + linkAggregationId + 'class="ui-widget-content">Aggregation</li>');
+		$('#arrow-panel-selectable').append('<li id=' + linkCompositionId + 'class="ui-widget-content">Composition</li>');
 	}
 	
 	function initUMLGraph() {
@@ -54,24 +66,45 @@ var umlboard = (function() {
 		//setup the drappable area
 		$('#uml-board').droppable({
 			drop: function(event, ui) {
-				var pos = ui.offset, dPos = $(this).offset();
 				
 				var uml = joint.shapes.uml;
-				var bloodgroup = new uml.Class({
-			        position: { x: (pos.left - dPos.left), y: (pos.top - dPos.top) },
-			        size: { width: 200, height: 100 },
+				var pos = ui.offset, dPos = $(this).offset();
+				var options = {
+					position: { x: (pos.left - dPos.left), y: (pos.top - dPos.top) },
+			        size: { width: elementDefaultWidth, height: elementDefaultHeight },
 			        name: 'Class',
 			        attributes: [],
-			        methods: []
-			    });
+			        methods: [],
+				};
 				
-				umlPanel.addElement(bloodgroup);
+				var element;
+				
+				var type = $(ui.draggable).attr("id");
+				switch(type) {
+					case diagramClassId:
+						element = new uml.Class(options);
+						break;
+					case diagramInterfaceId:
+						options['name'] = 'Inteface';
+						element = new uml.Interface(options);
+						break;
+					case diagramAbstractId:
+						options['name'] = 'Abstract';
+						element = new uml.Abstract(options);
+						break;
+					default:
+						element = new uml.Class(options);
+						break;
+				}
+				
+				//add the new created element to the panel
+				umlPanel.addElement(element);
 			},
 		});
 	}
 	
 	function initDrawingPanel() {
-		umlPanel = new UMLPanel('#uml-board', 800, 600);
+		umlPanel = new UMLPanel('#uml-board', 1600, 1200);
 	}
 	
 	function init() {
