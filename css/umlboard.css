@@ -1,0 +1,28 @@
+#app-container {
+	width: 100%;
+}
+
+#tool-bar {
+	width: 100%;
+}
+
+#left-panel {
+	float: left;
+	width: 250px;
+}
+
+#right-panel {
+	overflow: hidden;
+	border:1px solid;
+	border-radius:5px;
+}
+
+#uml-board {
+	width: 100%;
+	height: 800px;
+}
+
+.selectable .ui-selecting { background: #FECA40; }
+.selectable .ui-selected { background: #F39814; color: white; }
+.selectable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+.selectable li { margin: 3px; padding: 0.4em; font-size: 0.8em; height: 18px; }

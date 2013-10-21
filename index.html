@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+		
+		<title>UML Board App</title>
+		
+		<link href="http://www.jointjs.com/downloads/joint.min.css" rel="stylesheet" type="text/css" />
+		<link href="css/ui-lightness/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+		<link href="css/umlboard.css" rel="stylesheet">
+		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript" src="http://www.jointjs.com/downloads/joint.js"></script>
+		<script type="text/javascript" src="http://www.jointjs.com/downloads/joint.shapes.uml.js"></script>
+		<script type="text/javascript" src="https://cdn.goinstant.net/v1/platform.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>
+	</head>
+	
+	<body>
+		<noscript>JavaScript is required :(</noscript>
+		<div id='app-container'>
+			<div id='tool-bar'>
+			</div>
+			<div id='left-panel'>
+				<div id='diagram-accordion'>
+					<h3>Class(UML)</h3>
+					<div id='class-panel'>
+						<ol id="class-panel-selectable" class='selectable'>
+						</ol>
+					</div>
+					<h3>Arrows</h3>
+					<div id='arrow-panel'>
+						<ol id="arrow-panel-selectable" class='selectable'>
+						</ol>
+					</div>
+				</div>
+			</div>
+			<div id='right-panel'>
+				<div id='uml-board'>
+				</div>
+			</div>
+			
+			<div>
+				<form action="#">
+					<input type="text" name="name" id="sync" />
+				</form>
+		    </div>
+			
+			<script src="js/umlpanel.js"></script>
+			<script src="js/platform.js"></script>
+			<script src="js/umlboard.js"></script>
+		</div>
+	</body>
+</html>
