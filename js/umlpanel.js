@@ -14,6 +14,7 @@ function UMLPanel(container, w, h) {
 }
 
 UMLPanel.graphAddKey = 'addcell';
+UMLPanel.cellAttrUpdatedKey = 'cellattrupdate';
 UMLPanel.elementChangePositionKey = 'elementchangeposition';
 
 //public methods
@@ -33,6 +34,10 @@ UMLPanel.prototype = {
 					$('#cellname').val(cell.get('name'));
 					$('#attributes').val(cell.get('attributes'));
 					$('#methods').val(cell.get('methods'));
+				},
+				close: function() {
+					var key = self.platform.getKeyByKeyname(UMLPanel.cellAttrUpdatedKey);
+					key.set({id: cell.id, name: cell.get('name'), attributes: cell.get('attributes'), methods: cell.get('methods')});
 				},
 				buttons: [
 					{
@@ -79,6 +84,7 @@ UMLPanel.prototype = {
 				});
 			});
 			
+			//add key to monitor the position change of the cell
 			self.platform.addKey(UMLPanel.elementChangePositionKey, {}, function(key, context) {
 				//listen to the set event
 				key.on('set', function(value, context) {
@@ -87,16 +93,24 @@ UMLPanel.prototype = {
 				});
 			});
 			
+			//add key to monitor the attributes change of the cell
+			self.platform.addKey(UMLPanel.cellAttrUpdatedKey, {}, function(key, context) {
+				//listen to the set event
+				key.on('set', function(value, context) {
+					if (value.id != null) {
+						var cell = self.graph.getCell(value.id);
+						cell.set('name', value.name);
+						cell.set('attributes', value.attributes);
+						cell.set('methods', value.methods);
+					}
+				});
+			});
 			
 			//event handlers to set the keys
 			self.graph.on('add', function(cell) {
 				//set the key and notify other users
 				var key = self.platform.getKeyByKeyname(UMLPanel.graphAddKey);
 				key.set(cell);
-			});
-			
-			self.paper.on('cell:pointerdown', function(cellView, evt, x, y) {
-				
 			});
 			
 			self.paper.on('cell:pointermove', function(cellView, evt, x, y) {

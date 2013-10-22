@@ -39,8 +39,14 @@ Platform.prototype = {
 	},
 	
 	addKey: function(keyname, keyvalue, callback) {
+		if (this.getKeyByKeyname(keyname) != null) {
+			console.log('Already have this key existed.');
+			return;
+		}
+	
 		var self = this;
 		var key = this.attrs.room.key(keyname);
+		
 		
 		key.add(keyvalue, function(err, context) {
 			if (err) {
