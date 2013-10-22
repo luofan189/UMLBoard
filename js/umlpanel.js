@@ -22,9 +22,42 @@ UMLPanel.prototype = {
 		var self = this;
 		this.graph.addCell(element);
 		
+		var cell = this.graph.getCell(element.id);
 		//here is the trick
 	    $('g[model-id="' + element.id + '"]').dblclick(function() {
-	        alert("Cell is double clicked!");
+	        $( "#dialog-form" ).dialog({
+				autoOpen: false,
+				width: 500,
+				modal: true,
+				open: function(){
+					$('#cellname').val(cell.get('name'));
+					$('#attributes').val(cell.get('attributes'));
+					$('#methods').val(cell.get('methods'));
+				},
+				buttons: [
+					{
+						text: "Save",
+						click: function() {
+							cell.set('name', $('#cellname').val());
+							var attributes = $('#attributes').val();
+							var attrArray = attributes.split(',');
+							cell.set('attributes', attrArray);
+							var methods = $('#methods').val();
+							var methodArray = methods.split(',');
+							cell.set('methods', methodArray);
+							$( this ).dialog('close');
+						}
+					},
+					{
+						text: "Cancel",
+						click: function() {
+							$( this ).dialog('close');
+						}
+					}
+				]
+			});
+			
+			$( "#dialog-form" ).dialog('open');
 	    });
 	},
 	
