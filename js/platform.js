@@ -21,20 +21,6 @@ Platform.prototype = {
 			
 			//now call the callback
 			callback();
-			/*
-            var name = lobby.key('name');
-            var el = $('input[name="name"]');
-
-            // The listener will be invoked every time the value of name is changed
-            // by another user
-            name.on('set', function(value, context) {
-              el.val(value);
-            });
-
-            el.on('keyup', function() {
-              name.set($(this).val());
-            });
-			*/
           });
 	},
 	
