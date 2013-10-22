@@ -17,6 +17,7 @@ Platform.prototype = {
 				connection: connection,
 				room: room,
 				keys: [],
+				channels: [],
 			};
 			
 			//now call the callback
@@ -36,6 +37,20 @@ Platform.prototype = {
 		});
 		
 		return key;
+	},
+	
+	getKeyByChannelname: function(channelname) {
+		var self = this;
+		var channel = null;
+		
+		Object.keys(self.attrs.channels).forEach(function (index) {
+			var keyvaluepair = self.attrs.channels[index];
+			if (keyvaluepair.name == channelname) {
+				channel = keyvaluepair.value;
+			}
+		});
+		
+		return channel;
 	},
 	
 	addKey: function(keyname, keyvalue, callback) {
@@ -68,6 +83,15 @@ Platform.prototype = {
 			}
 			
 			self.attrs.keys[keyname] = null;
+		});
+	},
+	
+	addChannel: function(channelname, callback) {
+		var channel = this.attrs.room.channel(channelname);
+		var keyvaluepair = {name: channelname, value: channel};
+		this.attrs.channels.push(keyvaluepair);
+		channel.on('message', function(msg, context) {
+			callback(msg, context);
 		});
 	},
 }

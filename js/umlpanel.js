@@ -13,9 +13,9 @@ function UMLPanel(container, w, h) {
 	this.elements = [];
 }
 
+UMLPanel.cellPositionChannel = 'cellpositionchannel';
 UMLPanel.graphAddKey = 'addcell';
 UMLPanel.cellAttrUpdatedKey = 'cellattrupdate';
-UMLPanel.elementChangePositionKey = 'elementchangeposition';
 
 //public methods
 UMLPanel.prototype = {
@@ -84,15 +84,6 @@ UMLPanel.prototype = {
 				});
 			});
 			
-			//add key to monitor the position change of the cell
-			self.platform.addKey(UMLPanel.elementChangePositionKey, {}, function(key, context) {
-				//listen to the set event
-				key.on('set', function(value, context) {
-					var cell = self.graph.getCell(value.id);
-					cell.set('position', value.position);
-				});
-			});
-			
 			//add key to monitor the attributes change of the cell
 			self.platform.addKey(UMLPanel.cellAttrUpdatedKey, {}, function(key, context) {
 				//listen to the set event
@@ -106,6 +97,13 @@ UMLPanel.prototype = {
 				});
 			});
 			
+			//add channel
+			self.platform.addChannel(UMLPanel.cellPositionChannel, function(msg, context) {
+				//listen to the msg event
+				var cell = self.graph.getCell(msg.id);
+				cell.set('position', msg.position);
+			});
+			
 			//event handlers to set the keys
 			self.graph.on('add', function(cell) {
 				//set the key and notify other users
@@ -114,9 +112,19 @@ UMLPanel.prototype = {
 			});
 			
 			self.paper.on('cell:pointermove', function(cellView, evt, x, y) {
-				var key = self.platform.getKeyByKeyname(UMLPanel.elementChangePositionKey);
 				var cell = self.graph.getCell(cellView.model.id);
-				key.set(cell);
+				var channel = self.platform.getKeyByChannelname(UMLPanel.cellPositionChannel);
+				channel.message(
+					{
+						id: cell.id,
+						position: cell.get('position'),
+					},
+					function(err, msg, context) {
+						if (err) {
+							throw err;
+						}
+					}
+				);
 			});
 			
 			
