@@ -21,7 +21,13 @@ UMLPanel.cellAttrUpdatedKey = 'cellattrupdate';
 //public methods
 UMLPanel.prototype = {
 	notify: function(message) {
-		$("<div />", { class: 'topbarnotification', text: message }).hide().prependTo("body").slideDown('fast').delay(2000).slideUp(function() { $(this).remove(); });
+		$('<div />', { class: 'topbarnotification', text: message }).hide().
+			prependTo('body').
+			slideDown('fast').
+			delay(2000).
+			slideUp(function() { 
+				$(this).remove(); 
+			});
 	},
 	
 	addElement: function(element) {
@@ -41,8 +47,6 @@ UMLPanel.prototype = {
 					$('#methods').val(cell.get('methods'));
 				},
 				close: function() {
-					var key = self.platform.getKeyByKeyname(UMLPanel.cellAttrUpdatedKey);
-					key.set({id: cell.id, name: cell.get('name'), attributes: cell.get('attributes'), methods: cell.get('methods')});
 				},
 				buttons: [
 					{
@@ -55,6 +59,11 @@ UMLPanel.prototype = {
 							var methods = $('#methods').val();
 							var methodArray = methods.split(',');
 							cell.set('methods', methodArray);
+							
+							//set the key
+							var key = self.platform.getKeyByKeyname(UMLPanel.cellAttrUpdatedKey);
+							key.set({id: cell.id, name: cell.get('name'), attributes: cell.get('attributes'), methods: cell.get('methods')});
+							
 							$( this ).dialog('close');
 						}
 					},
