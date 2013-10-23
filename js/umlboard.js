@@ -81,37 +81,45 @@ var umlboard = (function() {
 					target: { x: (pos.left - dPos.left) + 100, y: (pos.top - dPos.top) }
 				};
 				
-				var element;
+				var element = {};
 				
 				var type = $(ui.draggable).attr("id");
 				switch(type) {
 					case diagramClassId:
-						element = new uml.Class(options);
+						element['element'] = new uml.Class(options);
+						element['type'] = "cell";
 						break;
 					case diagramInterfaceId:
 						options['name'] = 'Inteface';
-						element = new uml.Interface(options);
+						element['element'] = new uml.Interface(options);
+						element['type'] = "cell";
 						break;
 					case diagramAbstractId:
 						options['name'] = 'Abstract';
-						element = new uml.Abstract(options);
+						element['element'] = new uml.Abstract(options);
+						element['type'] = "cell";
 						break;
 					
 					//all the links
 					case linkGeneralizationId:
-						element = new uml.Generalization(linkOptions);
+						element['element'] = new uml.Generalization(linkOptions);
+						element['type'] = "link";
 						break;
 					case linkImplementationId:
-						element = new uml.Implementation(linkOptions);
+						element['element'] = new uml.Implementation(linkOptions);
+						element['type'] = "link";
 						break;
 					case linkAggregationId:
-						element = new uml.Aggregation(linkOptions);
+						element['element'] = new uml.Aggregation(linkOptions);
+						element['type'] = "link";
 						break;
 					case linkCompositionId:
-						element = new uml.Composition(linkOptions);
+						element['element'] = new uml.Composition(linkOptions);
+						element['type'] = "link";
 						break;
 					default:
-						element = new uml.Class(options);
+						element['element'] = new uml.Class(options);
+						element['type'] = "cell";
 						break;
 				}
 				

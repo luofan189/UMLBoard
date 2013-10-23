@@ -14,9 +14,14 @@ function UMLPanel(container, w, h) {
 }
 
 UMLPanel.cellPositionChannel = 'cellpositionchannel';
+UMLPanel.linkChangeSourceChannel = 'linkchangesource';
+UMLPanel.linkChangeTargetChannel = 'linkchangetarget';
+UMLPanel.linkChangeVerticesChannel = 'linkchangevertices';
 UMLPanel.graphAddKey = 'addcell';
 UMLPanel.graphRemoveKey = 'removecell';
 UMLPanel.cellAttrUpdatedKey = 'cellattrupdate';
+UMLPanel.linkChangeSourceKey = 'linkchangesource';
+
 
 //public methods
 UMLPanel.prototype = {
@@ -30,62 +35,119 @@ UMLPanel.prototype = {
 			});
 	},
 	
-	addElement: function(element) {
+	addElement: function(ele) {
 		var self = this;
-		this.graph.addCell(element);
+		var element = ele.element;
+		var type = ele.type;
 		
+		//add
+		this.graph.addCell(element);
 		var cell = this.graph.getCell(element.id);
-		//here is the trick
-	    $('g[model-id="' + element.id + '"]').dblclick(function() {
-	        $( "#dialog-form" ).dialog({
-				autoOpen: false,
-				width: 500,
-				modal: true,
-				open: function(){
-					$('#cellname').val(cell.get('name'));
-					$('#attributes').val(cell.get('attributes'));
-					$('#methods').val(cell.get('methods'));
-				},
-				close: function() {
-				},
-				buttons: [
-					{
-						text: "Save",
-						click: function() {
-							cell.set('name', $('#cellname').val());
-							var attributes = $('#attributes').val();
-							var attrArray = attributes.split(',');
-							cell.set('attributes', attrArray);
-							var methods = $('#methods').val();
-							var methodArray = methods.split(',');
-							cell.set('methods', methodArray);
-							
-							//set the key
-							var key = self.platform.getKeyByKeyname(UMLPanel.cellAttrUpdatedKey);
-							key.set({id: cell.id, name: cell.get('name'), attributes: cell.get('attributes'), methods: cell.get('methods')});
-							
-							$( this ).dialog('close');
-						}
+		
+		//trigger the update popup for cells
+		if (type == 'cell') {
+			//here is the trick
+			$('g[model-id="' + element.id + '"]').dblclick(function() {
+				$( "#dialog-form" ).dialog({
+					autoOpen: false,
+					width: 500,
+					modal: true,
+					open: function(){
+						$('#cellname').val(cell.get('name'));
+						$('#attributes').val(cell.get('attributes'));
+						$('#methods').val(cell.get('methods'));
 					},
-					{
-						text: "Delete",
-						click: function() {
-							cell.remove();
-							$( this ).dialog('close');
-						}
+					close: function() {
 					},
+					buttons: [
+						{
+							text: "Save",
+							click: function() {
+								cell.set('name', $('#cellname').val());
+								var attributes = $('#attributes').val();
+								var attrArray = attributes.split(',');
+								cell.set('attributes', attrArray);
+								var methods = $('#methods').val();
+								var methodArray = methods.split(',');
+								cell.set('methods', methodArray);
+								
+								//set the key
+								var key = self.platform.getKeyByKeyname(UMLPanel.cellAttrUpdatedKey);
+								key.set({id: cell.id, name: cell.get('name'), attributes: cell.get('attributes'), methods: cell.get('methods')});
+								
+								$( this ).dialog('close');
+							}
+						},
+						{
+							text: "Delete",
+							click: function() {
+								cell.remove();
+								$( this ).dialog('close');
+							}
+						},
+						{
+							text: "Cancel",
+							click: function() {
+								$( this ).dialog('close');
+							}
+						}
+					]
+				});
+				
+				$( "#dialog-form" ).show();
+				$( "#dialog-form" ).dialog('open');
+			});
+		}
+		else if (type == 'link') {
+			element.on('change:target', function() {
+				//set the channel message
+				var channel = self.platform.getKeyByChannelname(UMLPanel.linkChangeTargetChannel);
+				channel.message(
 					{
-						text: "Cancel",
-						click: function() {
-							$( this ).dialog('close');
+						id: element.id,
+						target: element.get('target'),
+					},
+					function(err, msg, context) {
+						if (err) {
+							throw err;
 						}
 					}
-				]
+				);
 			});
-			
-			$( "#dialog-form" ).show();
-			$( "#dialog-form" ).dialog('open');
-	    });
+			element.on('change:source', function() {
+				//set the channel message
+				var channel = self.platform.getKeyByChannelname(UMLPanel.linkChangeSourceChannel);
+				channel.message(
+					{
+						id: element.id,
+						source: element.get('source'),
+					},
+					function(err, msg, context) {
+						if (err) {
+							throw err;
+						}
+					}
+				);
+			});
+			element.on('change:vertices', function() {
+				//set the channel message
+				var channel = self.platform.getKeyByChannelname(UMLPanel.linkChangeVerticesChannel);
+				channel.message(
+					{
+						id: element.id,
+						vertices: element.get('vertices'),
+					},
+					function(err, msg, context) {
+						if (err) {
+							throw err;
+						}
+					}
+				);
+			});
+		}
+		else {
+			alert("Unsupported UML type, should either be cell or link!");
+		}
 	},
 	
 	addElements: function(elements, callbacks) {
@@ -131,6 +193,23 @@ UMLPanel.prototype = {
 						self.notify('Cell with name "' + cell.get('name') + '" has been updated by another user.');
 					}
 				});
+			});
+			
+			//add key to monitor the change of the link
+			self.platform.addChannel(UMLPanel.linkChangeTargetChannel, function(msg, context) {
+				//listen to the msg event
+				var link = self.graph.getCell(msg.id);
+				link.set('target', msg.target);
+			});
+			self.platform.addChannel(UMLPanel.linkChangeSourceChannel, function(msg, context) {
+				//listen to the msg event
+				var link = self.graph.getCell(msg.id);
+				link.set('source', msg.source);
+			});
+			self.platform.addChannel(UMLPanel.linkChangeVerticesChannel, function(msg, context) {
+				//listen to the msg event
+				var link = self.graph.getCell(msg.id);
+				link.set('vertices', msg.vertices);
 			});
 			
 			//add channel

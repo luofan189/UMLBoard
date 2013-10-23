@@ -1,4 +1,4 @@
-1. Not clear on how to use secret key as the link could not be found
+1. Not clear on how to use secret key at first glance as the link could not be found
 2. For some reason, could not get the room join working. It always complains about you must join the room first even I have implemented the room join logic.
 3. for some reason, sometime the key value object type changes during the transition. Ex. passing cell rather than passing an object. Seems to be a serialization problem either in goinstant or jointjs
 4. there is strange IE error/warning/popup which I don't know and cause out of sync
