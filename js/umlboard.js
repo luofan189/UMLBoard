@@ -22,6 +22,12 @@ var umlboard = (function() {
 		umlPanel.startPlatform(url);
 	}
 	
+	function setDraggble(container) {
+		$(container).draggable({
+			opacity: 0.7, helper: "clone",
+		});
+	}
+	
 	function initUMLClassGraph() {
 		$(function() {
 			$( ".selectable" ).selectable();
@@ -31,21 +37,9 @@ var umlboard = (function() {
 		$('#class-panel-selectable').append('<li id="' + diagramInterfaceId + '" class="ui-widget-content">Interface</li>');
 		$('#class-panel-selectable').append('<li id="' + diagramAbstractId + '" class="ui-widget-content">Abstract Class</li>');
 		
-		$('#diagram-class').draggable({
-			opacity: 0.7, helper: "clone",
-		});
-		
-		$('#diagram-interface').draggable({
-			opacity: 0.7, helper: "clone",
-		});
-		
-		$('#diagram-abstract').draggable({
-			opacity: 0.7, helper: "clone",
-		});
-		
-		$('#diagram-enum').draggable({
-			opacity: 0.7, helper: "clone",
-		});
+		setDraggble('#' + diagramClassId);
+		setDraggble('#' + diagramInterfaceId);
+		setDraggble('#' + diagramAbstractId);
 	}
 	
 	function initUMLArrowGraph() {
@@ -53,10 +47,15 @@ var umlboard = (function() {
 			$( ".selectable" ).selectable();
 		});
 		
-		$('#arrow-panel-selectable').append('<li id=' + linkGeneralizationId + 'class="ui-widget-content">Generalization</li>');
-		$('#arrow-panel-selectable').append('<li id=' + linkImplementationId + 'class="ui-widget-content">Implementation</li>');
-		$('#arrow-panel-selectable').append('<li id=' + linkAggregationId + 'class="ui-widget-content">Aggregation</li>');
-		$('#arrow-panel-selectable').append('<li id=' + linkCompositionId + 'class="ui-widget-content">Composition</li>');
+		$('#arrow-panel-selectable').append('<li id="' + linkGeneralizationId + '" class="ui-widget-content">Generalization</li>');
+		$('#arrow-panel-selectable').append('<li id="' + linkImplementationId + '" class="ui-widget-content">Implementation</li>');
+		$('#arrow-panel-selectable').append('<li id="' + linkAggregationId + '" class="ui-widget-content">Aggregation</li>');
+		$('#arrow-panel-selectable').append('<li id="' + linkCompositionId + '" class="ui-widget-content">Composition</li>');
+		
+		setDraggble('#' + linkGeneralizationId);
+		setDraggble('#' + linkImplementationId);
+		setDraggble('#' + linkAggregationId);
+		setDraggble('#' + linkCompositionId);
 	}
 	
 	function initUMLGraph() {
@@ -77,6 +76,11 @@ var umlboard = (function() {
 			        methods: [],
 				};
 				
+				var linkOptions = {
+					source: { x: (pos.left - dPos.left) - 100, y: (pos.top - dPos.top) },
+					target: { x: (pos.left - dPos.left) + 100, y: (pos.top - dPos.top) }
+				};
+				
 				var element;
 				
 				var type = $(ui.draggable).attr("id");
@@ -91,6 +95,20 @@ var umlboard = (function() {
 					case diagramAbstractId:
 						options['name'] = 'Abstract';
 						element = new uml.Abstract(options);
+						break;
+					
+					//all the links
+					case linkGeneralizationId:
+						element = new uml.Generalization(linkOptions);
+						break;
+					case linkImplementationId:
+						element = new uml.Implementation(linkOptions);
+						break;
+					case linkAggregationId:
+						element = new uml.Aggregation(linkOptions);
+						break;
+					case linkCompositionId:
+						element = new uml.Composition(linkOptions);
 						break;
 					default:
 						element = new uml.Class(options);
