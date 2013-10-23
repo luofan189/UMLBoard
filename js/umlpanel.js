@@ -15,6 +15,7 @@ function UMLPanel(container, w, h) {
 
 UMLPanel.cellPositionChannel = 'cellpositionchannel';
 UMLPanel.graphAddKey = 'addcell';
+UMLPanel.graphRemoveKey = 'removecell';
 UMLPanel.cellAttrUpdatedKey = 'cellattrupdate';
 
 //public methods
@@ -58,6 +59,13 @@ UMLPanel.prototype = {
 						}
 					},
 					{
+						text: "Delete",
+						click: function() {
+							cell.remove();
+							$( this ).dialog('close');
+						}
+					},
+					{
 						text: "Cancel",
 						click: function() {
 							$( this ).dialog('close');
@@ -91,6 +99,15 @@ UMLPanel.prototype = {
 				});
 			});
 			
+			self.platform.addKey(UMLPanel.graphRemoveKey, {}, function(key, context) {
+				//listen to the set event
+				key.on('set', function(value, context) {
+					//notification
+					self.notify('The cell with name "' + value.name + '" has been removed.');
+					value.remove();
+				});
+			});
+			
 			//add key to monitor the attributes change of the cell
 			self.platform.addKey(UMLPanel.cellAttrUpdatedKey, {}, function(key, context) {
 				//listen to the set event
@@ -118,6 +135,12 @@ UMLPanel.prototype = {
 			self.graph.on('add', function(cell) {
 				//set the key and notify other users
 				var key = self.platform.getKeyByKeyname(UMLPanel.graphAddKey);
+				key.set(cell);
+			});
+			
+			self.graph.on('remove', function(cell) {
+				//set the key and notify other users
+				var key = self.platform.getKeyByKeyname(UMLPanel.graphRemoveKey);
 				key.set(cell);
 			});
 			
