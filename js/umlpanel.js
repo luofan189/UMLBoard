@@ -19,6 +19,10 @@ UMLPanel.cellAttrUpdatedKey = 'cellattrupdate';
 
 //public methods
 UMLPanel.prototype = {
+	notify: function(message) {
+		$("<div />", { class: 'topbarnotification', text: message }).hide().prependTo("body").slideDown('fast').delay(2000).slideUp(function() { $(this).remove(); });
+	},
+	
 	addElement: function(element) {
 		var self = this;
 		this.graph.addCell(element);
@@ -62,6 +66,7 @@ UMLPanel.prototype = {
 				]
 			});
 			
+			$( "#dialog-form" ).show();
 			$( "#dialog-form" ).dialog('open');
 	    });
 	},
@@ -81,6 +86,8 @@ UMLPanel.prototype = {
 				//listen to the set event
 				key.on('set', function(value, context) {
 					self.graph.addCell(value);
+					//notification
+					self.notify('A new ' + value.type + ' has been added.');
 				});
 			});
 			
@@ -93,6 +100,9 @@ UMLPanel.prototype = {
 						cell.set('name', value.name);
 						cell.set('attributes', value.attributes);
 						cell.set('methods', value.methods);
+						
+						//notification
+						self.notify('Cell with name "' + cell.get('name') + '" has been updated by another user.');
 					}
 				});
 			});

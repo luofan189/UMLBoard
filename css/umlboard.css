@@ -22,6 +22,14 @@
 	height: 800px;
 }
 
+.topbarnotification { 
+    background: #990000; 
+    border-bottom: solid 2px #EEE; 
+    padding: 3px 0; 
+    text-align: center; 
+    color: white;
+}
+
 .selectable .ui-selecting { background: #FECA40; }
 .selectable .ui-selected { background: #F39814; color: white; }
 .selectable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
