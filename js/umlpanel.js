@@ -173,12 +173,12 @@ UMLPanel.prototype = {
 			self.platform.addKey(UMLPanel.graphRemoveKey, {}, function(key, context) {
 				//listen to the set event
 				key.on('set', function(value, context) {
-					//notification
-					self.notify('The cell with name "' + value.name + '" has been removed.');
 					var id = value.id;
 					var cell = self.graph.getCell(id);
 					if (cell != null) {
 						cell.remove();
+						//notification
+						self.notify('The cell with name "' + value.name + '" has been removed.');
 					}
 					
 				});
